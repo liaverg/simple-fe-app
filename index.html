@@ -23,7 +23,9 @@
       }
       /* Language toggle, fixed in the top-right corner */
       #lang-switch {
-        position: fixed;
+        /* absolute (not fixed): sits at the very top and scrolls away with the
+           page instead of floating over the content while scrolling. */
+        position: absolute;
         top: 1rem;
         right: 1rem;
         z-index: 50;

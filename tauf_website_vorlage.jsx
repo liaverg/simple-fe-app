@@ -130,42 +130,49 @@ export default function BaptismWebsite() {
     {
       label: "Taufe",
       name: "Kloster Osios Loukas",
+      icon: "⛪",
       coords: [38.39515, 22.74382],
       query: "Osios Loukas Monastery",
     },
     {
       label: "Feier",
       name: "Valaouras, Poseidonos 90, Antikyra",
+      icon: "🍽️",
       coords: [38.3778, 22.639],
       query: "Valaouras Antikyra",
     },
     {
       label: "Feier am Vorabend",
       name: "Buddha, Agios Isidoros",
+      icon: "🥂",
       coords: [38.363, 22.616],
       query: "Buddha Agios Isidoros Antikyra",
     },
     {
       label: "Übernachtung",
       name: "Antikyra Beach Hotel",
+      icon: "🏨",
       coords: [38.3798, 22.6369],
       query: "Antikyra Beach Hotel Antikyra",
     },
     {
       label: "Ausflug",
       name: "Galaxidi",
+      icon: "⚓",
       coords: [38.3778, 22.3789],
       query: "Galaxidi Greece",
     },
     {
       label: "Ausflug",
       name: "Delphi",
+      icon: "🏛️",
       coords: [38.4825, 22.5005],
       query: "Delphi Archaeological Site",
     },
     {
       label: "Ausflug",
       name: "Distomo",
+      icon: "🏘️",
       coords: [38.4267, 22.6689],
       query: "Distomo Greece",
     },
@@ -179,16 +186,38 @@ export default function BaptismWebsite() {
       if (!containerRef.current || typeof L === "undefined") return;
 
       const map = L.map(containerRef.current, { scrollWheelZoom: false });
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 19,
-        attribution: "&copy; OpenStreetMap-Mitwirkende",
-      }).addTo(map);
+      // Satellitenansicht ("Earth", Esri World Imagery, kein API-Schlüssel).
+      L.tileLayer(
+        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+        {
+          maxZoom: 19,
+          attribution:
+            "Tiles &copy; Esri — Quelle: Esri, Maxar, Earthstar Geographics",
+        }
+      ).addTo(map);
+
+      // Eigene Tropfen-Pins im Blauton der Seite, mit Emoji je Ort.
+      const pinIcon = (emoji) =>
+        L.divIcon({
+          className: "taufe-pin",
+          html:
+            '<div style="width:34px;height:34px;border-radius:50% 50% 50% 0;' +
+            "background:#183b78;transform:rotate(-45deg);" +
+            "box-shadow:0 3px 8px rgba(24,59,120,.4);border:2px solid #fff;" +
+            'display:flex;align-items:center;justify-content:center;">' +
+            '<span style="transform:rotate(45deg);font-size:15px;line-height:1;">' +
+            emoji +
+            "</span></div>",
+          iconSize: [34, 34],
+          iconAnchor: [17, 34],
+          popupAnchor: [0, -32],
+        });
 
       const markers = locations.map((loc) => {
         const link =
           "https://www.google.com/maps/search/?api=1&query=" +
           encodeURIComponent(loc.query);
-        return L.marker(loc.coords)
+        return L.marker(loc.coords, { icon: pinIcon(loc.icon) })
           .addTo(map)
           .bindPopup(
             "<strong>" +
